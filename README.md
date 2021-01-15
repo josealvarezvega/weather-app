@@ -1,5 +1,3 @@
-# weather-app
-weather-app-js
 PROYECTO WEATHER APP
 ====================
 
