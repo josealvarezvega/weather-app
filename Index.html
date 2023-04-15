@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>My Template</title>
+</head>
+<body>
+	<form method="post" action="{% url 'index' %}">
+		{% csrf_token %}
+		<label for="cantidad_dia_mes">Cantidad de días:</label>
+		<input type="number" id="cantidad_dia_mes" name="cantidad_dia_mes" required>
+		<button type="submit">Generar factura</button>
+	  </form>
+	  
+</body>
+</html>
