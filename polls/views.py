@@ -16,7 +16,7 @@ def index(request):
         #Desglose de la factura
         cantidad_dia_mes = int(request.POST.get('cantidad_dia_mes', 0))
         nombre_del_producto = 'factura'
-        cantidad_dia = int('304')
+        cantidad_dia = float(request.POST.get('cantidad_dia', 0))
         subtotal = float(cantidad_dia_mes * (cantidad_dia))
         porcentaje_de_impuesto = float(21/100)
         total_impuesto = float(subtotal * porcentaje_de_impuesto)
@@ -41,17 +41,6 @@ def index(request):
         telefono_receptor_factura = request.POST.get('telefono_receptor_factura', '')
         mail_receptor_factura = request.POST.get('mail_receptor_factura', '')
 
-
-        print(nombre_del_producto)
-        print('Número de días facturados')
-        print(cantidad_dia_mes)
-        print('Cantidad sin IVA')
-        print(subtotal)
-        print(porcentaje_de_impuesto)
-        print('IVA')
-        print(total_impuesto)
-        print('total con IVA')
-        print(total)
         
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
@@ -61,7 +50,7 @@ def index(request):
                     
                    #Datos emisor de la factura 
                    'telefono_emisor_factura' : telefono_emisor_factura, 
-                   'dirección_emisor_factura' : direccion_emisor_factura, 
+                   'direccion_emisor_factura' : direccion_emisor_factura, 
                    'documento_emisor_factura' : documento_emisor_factura, 
                    'nombre_emisor_factura' : nombre_emisor_factura,
                    'telefono_emisor_factura' : telefono_emisor_factura,
@@ -74,7 +63,7 @@ def index(request):
                    #Datos receptor de la factura
                     'nombre_receptor_factura': nombre_receptor_factura,
                     'documento_receptor_factura' : documento_receptor_factura,
-                    'dirección_receptor_factura' : direccion_receptor_factura,
+                    'direccion_receptor_factura' : direccion_receptor_factura,
                     'telefono_receptor_factura' : telefono_receptor_factura,
                     'mail_receptor_factura' : mail_receptor_factura,
 
@@ -84,10 +73,11 @@ def index(request):
                    'fecha_factura' : fecha_factura,
                    'concepto_factura' : concepto_factura, 
                    'dias': cantidad_dia_mes, 
-                   'tarifa_dia': cantidad_dia, 
-                   'cantidad_neta': subtotal, 
-                   'iva': total_impuesto, 
-                   'total_Factura': total}
+                   'tarifa_dia': f"{cantidad_dia:.2f}€".replace(".", ","), 
+                   'cantidad_neta': f"{subtotal:.2f}€".replace('.', ','),
+                   'iva': f"{total_impuesto:.2f}€".replace('.', ','),
+                   'total_Factura': f"{total:.2f}€".replace('.', ',')
+}
         doc.render(context)
      
         ruta_word = str(time_stamp) + ".docx"
@@ -110,10 +100,13 @@ def index(request):
         with open(ruta_pdf, 'rb') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=' + ruta_pdf
-            return response
+            
+            # Cerrar el archivo
+            pdf.close()
+
             os.remove(ruta_word)
             os.remove(ruta_pdf)
-            
+            return response
             
     
     else:
